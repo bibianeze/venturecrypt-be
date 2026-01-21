@@ -66,17 +66,17 @@ function Dashboard() {
 
       setUser(userData);
 
-      const statsResponse = await axios.get('http://localhost:5000/api/investment/dashboard-stats', {
+      const statsResponse = await axios.get('https://venturecrypt-be-backend.onrender.com/api/investment/dashboard-stats', {
         headers: { Authorization: `Bearer ${token}` }
       });
       setStats(statsResponse.data);
 
-      const investmentsResponse = await axios.get('http://localhost:5000/api/investment/my-investments', {
+      const investmentsResponse = await axios.get('https://venturecrypt-be-backend.onrender.com/api/investment/my-investments', {
         headers: { Authorization: `Bearer ${token}` }
       });
       setInvestments(investmentsResponse.data);
 
-      const plansResponse = await axios.get('http://localhost:5000/api/investment/plans');
+      const plansResponse = await axios.get('https://venturecrypt-be-backend.onrender.com/api/investment/plans');
       setPlans(plansResponse.data);
 
       setLoading(false);
@@ -128,7 +128,7 @@ function Dashboard() {
               <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-lg flex items-center justify-center">
                 <TrendingUp className="w-6 h-6 text-white" />
               </div>
-              <span className="text-xl font-bold text-white">CryptoInvest</span>
+              <span className="text-xl font-bold text-white">VentureCrypt</span>
             </div>
 
             <div className="flex items-center gap-4">
@@ -425,7 +425,7 @@ function WithdrawModal({ stats, onClose, onSuccess }) {
     try {
       const token = localStorage.getItem('token');
       await axios.post(
-        'http://localhost:5000/api/investment/withdraw',
+        'https://venturecrypt-be-backend.onrender.com/api/investment/withdraw',
         {
           amount: parseFloat(amount),
           withdrawalMethod,
@@ -950,7 +950,7 @@ function InvestmentModal({ plans, onClose, onSuccess }) {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.post(
-        'http://localhost:5000/api/investment/invest',
+        'https://venturecrypt-be-backend.onrender.com/api/investment/invest',
         {
           planId: selectedPlan._id,
           amount: parseFloat(amount),

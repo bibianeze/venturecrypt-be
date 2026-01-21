@@ -71,9 +71,10 @@ function AdminLogin() {
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   className="w-full pl-11 pr-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500/50 transition"
-                  placeholder="admin@cryptoinvest.com"
+                  placeholder="contact@venture-crypt.com"
                   disabled={isLoading}
                 />
+               
               </div>
             </div>
 

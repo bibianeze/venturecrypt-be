@@ -238,7 +238,7 @@ function LandingPage() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">
-              Why CryptoInvest Stands Out
+              Why VentureCrypt Stands Out
             </h2>
             <p className="text-lg sm:text-xl text-gray-400 px-4 sm:px-0">
               The most powerful platform for exponential wealth growth
@@ -327,7 +327,7 @@ function LandingPage() {
                 <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-full text-white text-3xl font-bold mb-6">
                   1
                 </div>
-                <h3 className="text-2xl font-bold text-white mb-4">Join CryptoInvest</h3>
+                <h3 className="text-2xl font-bold text-white mb-4">Join VentureCrypt</h3>
                 <p className="text-gray-400 leading-relaxed">
                   Quick registration with just your email. Verified and ready to invest in under 60 seconds.
                 </p>
@@ -734,7 +734,7 @@ function ReviewsSection({ handleInvestClick }) {
       role: "Medical Professional",
       initials: "AF",
       rating: 5,
-      review: "Working 80-hour weeks as a surgeon, I needed passive income that actually worked. CryptoInvest delivered beyond my wildest expectations. The weekly compounding is automatic and the returns are life-changing. I'm planning early retirement.",
+      review: "Working 80-hour weeks as a surgeon, I needed passive income that actually worked. VentureCrypt delivered beyond my wildest expectations. The weekly compounding is automatic and the returns are life-changing. I'm planning early retirement.",
       plan: "Premium"
     },
     {
@@ -750,7 +750,7 @@ function ReviewsSection({ handleInvestClick }) {
       role: "Marketing Director",
       initials: "LA",
       rating: 5,
-      review: "This platform gave me financial independence I never thought possible. The transparency, the consistent weekly returns, the compounding effect - everything is exactly as promised. I tell everyone about CryptoInvest. It's truly life-changing.",
+      review: "This platform gave me financial independence I never thought possible. The transparency, the consistent weekly returns, the compounding effect - everything is exactly as promised. I tell everyone about VentureCrypt. It's truly life-changing.",
       plan: "Premium"
     }
   ];
@@ -985,7 +985,7 @@ function AuthModal({ onClose }) {
           <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-2xl mb-4">
             <TrendingUp className="w-8 h-8 text-white" />
           </div>
-          <h2 className="text-3xl font-bold text-white mb-2">Welcome to CryptoInvest</h2>
+          <h2 className="text-3xl font-bold text-white mb-2">Welcome to VentureCrypt</h2>
           <p className="text-gray-400">Start earning weekly compounding returns</p>
         </div>
 

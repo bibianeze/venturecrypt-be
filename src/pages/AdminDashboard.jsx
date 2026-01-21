@@ -383,7 +383,7 @@ function AdminDashboard() {
                 </div>
                 <div>
                   <div className="text-lg font-bold text-white">
-                    CryptoInvest
+                    VentureCrypt
                   </div>
                   <div className="text-xs text-gray-400">Admin Panel</div>
                 </div>

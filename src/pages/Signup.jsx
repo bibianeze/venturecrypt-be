@@ -42,7 +42,7 @@ const handleSubmit = async (e) => {
   setLoading(true);
 
   try {
-    const response = await axios.post('http://localhost:5000/api/auth/signup', {
+    const response = await axios.post('https://venturecrypt-be-backend.onrender.com/api/auth/signup', {
       fullName: formData.fullName,
       email: formData.email,
       password: formData.password
@@ -95,7 +95,7 @@ const handleSubmit = async (e) => {
               />
             </svg>
           </div>
-          <h1 className="text-4xl font-bold text-white mb-2">CryptoInvest</h1>
+          <h1 className="text-4xl font-bold text-white mb-2">VentureCrypt</h1>
           <p className="text-gray-300">Start your investment journey</p>
         </div>
 

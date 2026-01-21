@@ -1,7 +1,7 @@
 // services/adminApi.js
 // Frontend API service for connecting to your backend
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_URL = import.meta.env.VITE_API_URL || 'https://venturecrypt-be-backend.onrender.com/api';
 
 
 // Helper to get auth headers
