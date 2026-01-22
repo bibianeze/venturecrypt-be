@@ -242,9 +242,10 @@ export const rejectWithdrawal = async (withdrawalId, reason = '') => {
 // ==================== UTILITY ====================
 
 // Test API connection
+// Test API connection
 export const testConnection = async () => {
   try {
-    const response = await fetch(`${API_URL.replace('/api', '')}/api/health`);
+    const response = await fetch(`${API_URL}/health`);
     return await response.json();
   } catch (error) {
     console.error('Connection test failed:', error);
