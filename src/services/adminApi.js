@@ -3,159 +3,261 @@
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://venturecrypt-be-backend.onrender.com/api';
 
+console.log('🔗 Admin API URL:', API_URL);
 
 // Helper to get auth headers
 const getAuthHeaders = () => {
   const token = localStorage.getItem('adminToken');
   return {
     'Content-Type': 'application/json',
-    'Authorization': `Bearer ${token}`
+    'Authorization': token ? `Bearer ${token}` : ''
   };
 };
 
-// Handle API responses
+// Handle API responses with better error messages
 const handleResponse = async (response) => {
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({ error: 'Request failed' }));
-    throw new Error(error.error || 'Request failed');
+  const contentType = response.headers.get('content-type');
+  
+  // Try to parse JSON response
+  let data;
+  try {
+    if (contentType && contentType.includes('application/json')) {
+      data = await response.json();
+    } else {
+      // If not JSON, get text for debugging
+      const text = await response.text();
+      console.error('Non-JSON response:', text);
+      throw new Error('Server returned invalid response format');
+    }
+  } catch (parseError) {
+    console.error('Failed to parse response:', parseError);
+    throw new Error('Failed to parse server response');
   }
-  return response.json();
+
+  // Handle error responses
+  if (!response.ok) {
+    const errorMessage = data?.error || data?.message || `Request failed with status ${response.status}`;
+    console.error('API Error:', {
+      status: response.status,
+      statusText: response.statusText,
+      error: errorMessage,
+      data
+    });
+    throw new Error(errorMessage);
+  }
+
+  return data;
+};
+
+// Generic fetch wrapper with better error handling
+const apiFetch = async (endpoint, options = {}) => {
+  const url = `${API_URL}${endpoint}`;
+  
+  console.log(`📡 ${options.method || 'GET'} ${url}`);
+  
+  try {
+    const response = await fetch(url, {
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+      }
+    });
+    
+    return await handleResponse(response);
+  } catch (error) {
+    console.error('Fetch error:', error);
+    
+    // Provide user-friendly error messages
+    if (error.message === 'Failed to fetch') {
+      throw new Error('Unable to connect to server. Please check your internet connection.');
+    }
+    
+    throw error;
+  }
 };
 
 // ==================== ADMIN AUTH ====================
 
 export const adminLogin = async (email, password) => {
-  const response = await fetch(`${API_URL}/admin/login`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password })
+  console.log('🔐 Attempting admin login for:', email);
+  
+  try {
+    const data = await apiFetch('/admin/login', {
+      method: 'POST',
+      body: JSON.stringify({ email: email.trim(), password })
+    });
+    
+    console.log('✅ Login successful:', data.admin?.email);
+    return data;
+  } catch (error) {
+    console.error('❌ Login failed:', error.message);
+    throw error;
+  }
+};
+
+export const getAdminProfile = async () => {
+  return apiFetch('/admin/profile', {
+    headers: getAuthHeaders()
   });
-  return handleResponse(response);
 };
 
 // ==================== DASHBOARD ====================
 
 export const getDashboardStats = async () => {
-  const response = await fetch(`${API_URL}/admin/stats`, {
+  return apiFetch('/admin/stats', {
     headers: getAuthHeaders()
   });
-  return handleResponse(response);
 };
 
 // ==================== USERS ====================
 
 export const getUsers = async (params = {}) => {
-  const queryString = new URLSearchParams(params).toString();
-  const response = await fetch(`${API_URL}/admin/users?${queryString}`, {
+  // Remove undefined/null values
+  const cleanParams = Object.fromEntries(
+    Object.entries(params).filter(([_, v]) => v != null && v !== '')
+  );
+  
+  const queryString = new URLSearchParams(cleanParams).toString();
+  const endpoint = `/admin/users${queryString ? `?${queryString}` : ''}`;
+  
+  return apiFetch(endpoint, {
     headers: getAuthHeaders()
   });
-  return handleResponse(response);
 };
 
 export const getUserDetails = async (userId) => {
-  const response = await fetch(`${API_URL}/admin/users/${userId}`, {
+  return apiFetch(`/admin/users/${userId}`, {
     headers: getAuthHeaders()
   });
-  return handleResponse(response);
 };
 
-export const updateUserBalance = async (userId, amount, type, note) => {
-  const response = await fetch(`${API_URL}/admin/users/${userId}/update-balance`, {
+export const updateUserBalance = async (userId, amount, type, note = '') => {
+  return apiFetch(`/admin/users/${userId}/update-balance`, {
     method: 'POST',
     headers: getAuthHeaders(),
     body: JSON.stringify({ amount, type, note })
   });
-  return handleResponse(response);
 };
 
-// Add this after updateUserBalance function (around line 68)
-
-export const updateUserEarnings = async (userId, amount, type, note) => {
-  const response = await fetch(`${API_URL}/admin/users/${userId}/update-earnings`, {
+export const updateUserEarnings = async (userId, amount, type, note = '') => {
+  return apiFetch(`/admin/users/${userId}/update-earnings`, {
     method: 'POST',
     headers: getAuthHeaders(),
     body: JSON.stringify({ amount, type, note })
   });
-  return handleResponse(response);
 };
 
 export const updateUserStatus = async (userId, status) => {
-  const response = await fetch(`${API_URL}/admin/users/${userId}/status`, {
+  return apiFetch(`/admin/users/${userId}/status`, {
     method: 'PATCH',
     headers: getAuthHeaders(),
     body: JSON.stringify({ status })
   });
-  return handleResponse(response);
+};
+
+export const deleteUser = async (userId) => {
+  return apiFetch(`/admin/users/${userId}`, {
+    method: 'DELETE',
+    headers: getAuthHeaders()
+  });
 };
 
 // ==================== INVESTMENTS ====================
 
 export const getInvestments = async (params = {}) => {
-  const queryString = new URLSearchParams(params).toString();
-  const response = await fetch(`${API_URL}/admin/investments?${queryString}`, {
+  const cleanParams = Object.fromEntries(
+    Object.entries(params).filter(([_, v]) => v != null && v !== '')
+  );
+  
+  const queryString = new URLSearchParams(cleanParams).toString();
+  const endpoint = `/admin/investments${queryString ? `?${queryString}` : ''}`;
+  
+  return apiFetch(endpoint, {
     headers: getAuthHeaders()
   });
-  return handleResponse(response);
 };
 
 export const approveInvestment = async (investmentId) => {
-  const response = await fetch(`${API_URL}/admin/investments/${investmentId}/approve`, {
+  return apiFetch(`/admin/investments/${investmentId}/approve`, {
     method: 'PATCH',
     headers: getAuthHeaders()
   });
-  return handleResponse(response);
 };
 
-export const rejectInvestment = async (investmentId, reason) => {
-  const response = await fetch(`${API_URL}/admin/investments/${investmentId}/reject`, {
+export const rejectInvestment = async (investmentId, reason = '') => {
+  return apiFetch(`/admin/investments/${investmentId}/reject`, {
     method: 'PATCH',
     headers: getAuthHeaders(),
     body: JSON.stringify({ reason })
   });
-  return handleResponse(response);
 };
 
 export const completeInvestment = async (investmentId) => {
-  const response = await fetch(`${API_URL}/admin/investments/${investmentId}/complete`, {
+  return apiFetch(`/admin/investments/${investmentId}/complete`, {
     method: 'PATCH',
     headers: getAuthHeaders()
   });
-  return handleResponse(response);
 };
 
 export const createInvestment = async (investmentData) => {
-  const response = await fetch(`${API_URL}/admin/investments/create`, {
+  return apiFetch('/admin/investments/create', {
     method: 'POST',
     headers: getAuthHeaders(),
     body: JSON.stringify(investmentData)
   });
-  return handleResponse(response);
 };
 
 // ==================== WITHDRAWALS ====================
 
 export const getWithdrawals = async (params = {}) => {
-  const queryString = new URLSearchParams(params).toString();
-  const response = await fetch(`${API_URL}/admin/withdrawals?${queryString}`, {
+  const cleanParams = Object.fromEntries(
+    Object.entries(params).filter(([_, v]) => v != null && v !== '')
+  );
+  
+  const queryString = new URLSearchParams(cleanParams).toString();
+  const endpoint = `/admin/withdrawals${queryString ? `?${queryString}` : ''}`;
+  
+  return apiFetch(endpoint, {
     headers: getAuthHeaders()
   });
-  return handleResponse(response);
 };
 
-export const approveWithdrawal = async (withdrawalId, transactionHash) => {
-  const response = await fetch(`${API_URL}/admin/withdrawals/${withdrawalId}/approve`, {
+export const approveWithdrawal = async (withdrawalId, transactionHash = '') => {
+  return apiFetch(`/admin/withdrawals/${withdrawalId}/approve`, {
     method: 'PATCH',
     headers: getAuthHeaders(),
     body: JSON.stringify({ transactionHash })
   });
-  return handleResponse(response);
 };
 
-export const rejectWithdrawal = async (withdrawalId, reason) => {
-  const response = await fetch(`${API_URL}/admin/withdrawals/${withdrawalId}/reject`, {
+export const rejectWithdrawal = async (withdrawalId, reason = '') => {
+  return apiFetch(`/admin/withdrawals/${withdrawalId}/reject`, {
     method: 'PATCH',
     headers: getAuthHeaders(),
     body: JSON.stringify({ reason })
   });
-  return handleResponse(response);
+};
+
+// ==================== UTILITY ====================
+
+// Test API connection
+export const testConnection = async () => {
+  try {
+    const response = await fetch(`${API_URL.replace('/api', '')}/api/health`);
+    return await response.json();
+  } catch (error) {
+    console.error('Connection test failed:', error);
+    throw new Error('Unable to connect to API server');
+  }
+};
+
+// Clear admin session
+export const logout = () => {
+  localStorage.removeItem('adminToken');
+  localStorage.removeItem('adminInfo');
+  localStorage.removeItem('adminEmail');
+  localStorage.removeItem('adminName');
+  localStorage.removeItem('isAdmin');
+  console.log('🚪 Admin logged out');
 };
