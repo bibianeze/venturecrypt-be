@@ -32,7 +32,7 @@ const handleSubmit = async (e) => {
     localStorage.setItem('user', JSON.stringify(response.data.user));
     
     setAuth(true);
-    navigate('/dashboard');
+    navigate('/');
   } catch (err) {
     setError(err.response?.data?.message || 'Login failed. Please try again.');
   } finally {
